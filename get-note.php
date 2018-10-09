@@ -9,7 +9,11 @@ $repo = Git::open('./');
     if(!isset($_GET["hash"]))
         echo json_encode(array("note"=>"ERROR: This app is coded wrong. No hash number sent."));
     else {
-        $note = $repo->run(sprintf("notes show %s", $_GET["hash"]));
+        try {
+            $note = $repo->run(sprintf("notes show %s", $_GET["hash"]));
+        } catch (Exception $e) {
+            $note = "*No notes*";// . ": " . $e;
+        }
         echo json_encode(array("note"=>$note));
     }
 ?>

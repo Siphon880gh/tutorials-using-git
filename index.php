@@ -12,7 +12,7 @@ $repo = Git::open('./');
 $output = $repo->run("log --graph --abbrev-commit --decorate --exclude=refs/notes/commits --format=format:'%d: %s %C(bold blue)[%H]%C(reset)%n   %C(white)%an%C(reset) %C(dim white) - %aD (%ar)' --all");
 $lines = explode("\n", $output);
 
-echo "<main><pre>"; // preserving tabs to HTML display
+echo "<main style='height:50vh;'><pre>"; // preserving tabs to HTML display
 for($i = 0; $i<count($lines); $i++) {
     $line = $lines[$i];
     if($i%2===0) {
@@ -28,18 +28,10 @@ for($i = 0; $i<count($lines); $i++) {
 }
 echo "</pre></main>"
 
-// Working on Notes
-// https://git-scm.com/docs/git-notes
-
-// Another view:
-// git show-branch
- 
-
-/* Now this is a tip of master */
 ?>
 
 <aside id="selected"><br></aside>
-<aside id="notes" style="border-top: 1px solid gray; padding-top: 15px;"></aside>
+<aside id="notes" style="border-top: 1px solid gray; padding-top: 5px;"></aside>
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.3.0/showdown.min.js"></script>
@@ -74,7 +66,21 @@ $(function() {
         console.log(note);
     }
 
+    // https://kbjr.github.io/Git.php/
 
+    // git does not allow git log graph combined with --reverse
+    // https://github.com/jonas/tig/issues/127
+    // work around is piping to tac which is not included in all environments so that's prohibitive
+
+
+    // Working on Notes
+    // https://git-scm.com/docs/git-notes
+
+    // Another view:
+    // git show-branch
+    
+
+    /* Now this is a tip of master */
 });    
 </script>
     
