@@ -15,6 +15,7 @@ $repo = Git::open('./');
             file_put_contents("temp.diff", $diff);
             exec("chmod +x temp.diff");
             $gitd = shell_exec("(cat ./temp.diff | ./diff2html.sh)");
+            exec("rm temp.diff");
         } catch (Exception $e) {
             $gitd = "*No diff possible at this position.*";// . ": " . $e;
         }
