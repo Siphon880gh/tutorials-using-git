@@ -11,43 +11,55 @@ $repo = Git::open('./');
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script>
 window.holdingSecretKey = false;
+
+// parse hash from line
+parseHash = function(firstLine) { 
+    return firstLine.substring(
+                firstLine.lastIndexOf("[") + 1, 
+                firstLine.lastIndexOf("]")
+            );
+}; 
+
+// get note by hash
+storeNoteByHash = function(hash, $commit) {
+    $.getJSON("get-note.php", {hash: hash}, (objNote) => {
+        $commit.data("note", objNote.note);
+    });
+}
+
+
+// cast note to markdown
+castNoteToMD = function($commit) {
+    const note = $commit.data("note");
+    var converter = new showdown.Converter();
+    converter.setOption("literalMidWordUnderscores", true);
+    $("body").html();
+    if(note.length)
+        $("#notes").html(converter.makeHtml(note));
+    else
+        $("#notes").html("<i>No notes</i>");
+}
+
 $(function() {
 
     //TODO: After rebasing or amending, the notes disappeared! How to preserve?
 
-    // parse hash from line
-    parseHash = function(firstLine) { 
-        return firstLine.substring(
-                    firstLine.lastIndexOf("[") + 1, 
-                    firstLine.lastIndexOf("]")
-                );
-    }; 
-
-    // get note by hash
-    getNoteByHash = function(hash) {
-        $.getJSON("get-note.php", {hash: hash}, (objNote) => castNoteToMD(objNote.note));
-    }
-
-    // cast note to markdown
-    castNoteToMD = function(note) {
-        var converter = new showdown.Converter();
-        converter.setOption("literalMidWordUnderscores", true);
-        $("body").html();
-        $("#notes").html(converter.makeHtml(note));
-        console.log(note);
-    }
+    // get notes for every commit and store locally
+    $(".hover-notes").each((i,el)=> {
+        const hash = parseHash($(el).text());
+        storeNoteByHash(hash, $(el));
+    });
 
     // mouse enter
     $(".hover-notes").on("mouseenter", (e) => { 
-        $("#selected").text(e.target.innerText);
-        const hash = parseHash(e.target.innerText);
-        getNoteByHash(hash);
+        $("#indicator-current-commit").text(e.target.innerText);
+        castNoteToMD($(e.target))
     });
 
 
-    // gitd
+    // click to see git diff (hold shift for alternate view)
     $(".hover-notes").on("click", (e) => { 
-        $("#selected").text(e.target.innerText);
+        $("#indicator-current-commit").text(e.target.innerText);
         const hash = parseHash(e.target.innerText);
         if(window.holdingSecretKey)
             window.open(`alt-git-diff/get-diff.php?current_hash=${hash}`, "_blank");
@@ -110,7 +122,7 @@ $(function() {
                     $line = str_replace(" : ", "", $line); // Remove : . Because %d or branch name only appears when branching, otherwise shows : instead of (branchName):
 
                 $pos = strpos($line, "*"); // ; sometimes the line starts with | *
-                $line = substr($line, 0, $pos) . "<span class='hover-notes' style='color:blue;'>" . substr($line, $pos) . "</span><br>";
+                $line = substr($line, 0, $pos) . "<span class='hover-notes' style='color:blue;' data-note=''>" . substr($line, $pos) . "</span><br>";
                 echo $line;
             } else {
                 $isMatchAfterSymbol = preg_match('/[0-9A-Za-z]/', $line, $matches, PREG_OFFSET_CAPTURE);
@@ -124,7 +136,7 @@ $(function() {
     </pre>
 </main>
 
-<aside id="selected" style="margin-top: 1rem;"><br></aside>
+<aside id="indicator-current-commit" style="margin-top: 1rem;"><br></aside>
 <aside id="notes" style="border-top: 1px solid gray; padding-top: 5px;"></aside>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.3.0/showdown.min.js"></script>

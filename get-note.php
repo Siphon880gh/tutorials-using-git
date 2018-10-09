@@ -12,7 +12,7 @@ $repo = Git::open('./');
         try {
             $note = $repo->run(sprintf("notes show %s", $_GET["hash"]));
         } catch (Exception $e) {
-            $note = "*No notes*";// . ": " . $e;
+            $note = "";
         }
         echo json_encode(array("note"=>$note));
     }
