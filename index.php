@@ -38,9 +38,8 @@ echo "</pre></main>"
 /* Now this is a tip of master */
 ?>
 
-<aside id="notes" style="border-top: 1px solid gray; padding-top: 15px;">
-
-</aside>
+<aside id="selected"><br></aside>
+<aside id="notes" style="border-top: 1px solid gray; padding-top: 15px;"></aside>
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.3.0/showdown.min.js"></script>
@@ -61,6 +60,7 @@ $(function() {
 
     // mouse enter
     $(".hover-notes").on("mouseenter", (e) => { 
+        $("#selected").text(e.target.innerText);
         const hash = getHash(e.target.innerText);
         getNoteByHash(hash);
     });
@@ -71,6 +71,7 @@ $(function() {
         converter.setOption("literalMidWordUnderscores", true);
         $("body").html();
         $("#notes").html(converter.makeHtml(note));
+        console.log(note);
     }
 
 
