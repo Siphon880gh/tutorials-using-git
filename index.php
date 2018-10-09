@@ -4,16 +4,6 @@ ini_set('display_errors', 1);
 require_once("git-php/Git.php");
 $repo = Git::open('./');
 
-//echo exec("/usr/local/git/libexec/git-core/git log");
-
-/* $output = $repo->log();
-$output = str_replace("\n", "<br>", $output);
-echo $output; */
-
-/* $output = $repo->run("log --graph --all --simplify-by-decoration");
-$output = str_replace("\n", "<br>", $output);
-echo $output; */
-
 //$output = $repo->run("log --graph --abbrev-commit --decorate --format=format:'%s %C(bold blue)[%H]%C(reset)%n  %C(white)%an%C(reset) %C(dim white) - %aD (%ar)%d%n' --all");
 $output = $repo->run("log --graph --abbrev-commit --decorate --format=format:'%s %C(bold blue)[%H]%C(reset)%n   %C(white)%an%C(reset) %C(dim white) - %aD (%ar)%d' --all");
 $lines = explode("\n", $output);
@@ -32,15 +22,10 @@ for($i = 0; $i<count($lines); $i++) {
     }
 }
 echo "</pre>"
+
+// Another view:
+// git show-branch
  
-/* 
-$output = str_replace("\r", "<br>", $output);
-$output = "<span style='color:blue;'>" . $output;
-$output = str_replace("]]]]", "]</span>", $output);
-
-echo $output; */
-
-// https://github.com/kbjr/Git.php/blob/master/readme.md
 
 /* Now this is a tip of master */
 ?>
