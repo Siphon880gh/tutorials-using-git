@@ -10,6 +10,7 @@ $repo = Git::open('./');
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script>
+window.holdingSecretKey = false;
 $(function() {
 
     // parse hash from line
@@ -46,7 +47,10 @@ $(function() {
     $(".hover-notes").on("click", (e) => { 
         $("#selected").text(e.target.innerText);
         const hash = parseHash(e.target.innerText);
-        window.open(`get-diff.php?current_hash=${hash}`, "_blank");
+        if(window.holdingSecretKey)
+            window.open(`alt-git-diff/get-diff.php?current_hash=${hash}`, "_blank");
+        else
+            window.open(`get-diff.php?current_hash=${hash}`, "_blank");
     });
 
     // https://kbjr.github.io/Git.php/
@@ -64,7 +68,17 @@ $(function() {
 
 
     /* Now this is a tip of master */
+
+    $("body").on("keydown", function(e) {
+        if(e.shiftKey)
+            window.holdingSecretKey = true;
+    });
+    $("body").on("keyup", function(e) {
+        if(e.shiftKey)
+            window.holdingSecretKey = false;
+    });
 });    
+
 </script>
 
 <style>
