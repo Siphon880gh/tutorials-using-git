@@ -92,6 +92,7 @@ $(function() {
 
 <main style='height:50vh; overflow-y: scroll;'>
 <h2>Tutorials Using Git Branches and Commits</h2>
+<p>1. Move mouse over commits for any notes you added with <i>git notes edit</i>, ideally where you write parts of the tutorial in Markdown format.<br>2. Click a commit for a git diff with the commit more upstream, ideally what the tutorial is referring to.<br>3. Hold shift while clicking a commit for the alternate git diff view that's side by side (draw back is there's no word wrapping).</p>
     <pre><!-- pre: to show tab characters --><?php
         $output = $repo->run("log --graph --abbrev-commit --decorate --exclude=refs/notes/commits --format=format:'%d: %s %C(bold blue)[%H]%C(reset)%n   %C(white)%an%C(reset) %C(dim white) - %aD (%ar)' --all");
         $lines = explode("\n", $output);
