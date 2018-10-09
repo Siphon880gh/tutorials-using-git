@@ -13,6 +13,8 @@ $repo = Git::open('./');
 window.holdingSecretKey = false;
 $(function() {
 
+    //TODO: After rebasing or amending, the notes disappeared! How to preserve?
+
     // parse hash from line
     parseHash = function(firstLine) { 
         return firstLine.substring(
