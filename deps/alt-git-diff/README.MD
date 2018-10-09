@@ -1,4 +1,4 @@
-Obsolete Git Diff
+Alternate Git Diff
 ===
 
 This works as well but the side by side comparison takes up >100% of the width if text file that's compared has no line breaks between long lines. If you can figure out how to fix that using css, then this version is much better because they're side by side comparisons with line numbers.

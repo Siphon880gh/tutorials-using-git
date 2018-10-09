@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once("../git-php/Git.php");
-$repo = Git::open('../');
+$repo = Git::open('../../');
 
 require_once 'git-diff/lib/DiffPage.php';
 require_once 'git-diff/lib/DiffSection.php';
