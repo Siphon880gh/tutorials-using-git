@@ -6,5 +6,5 @@ $repo = Git::open('./');
 
 //echo exec("/usr/local/git/libexec/git-core/git log");
 
-echo $repo->log();
+printf($repo->log() . "%s", "hi");
 ?>
