@@ -14,7 +14,7 @@ $repo = Git::open('./');
             $diff = $repo->run(sprintf("diff %s^ %s", $_GET["current_hash"], $_GET["current_hash"]));
             file_put_contents("temp.diff", $diff);
             exec("chmod +x temp.diff");
-            $gitd = shell_exec("(cat ./temp.diff | sh ./diff2html.sh)");
+            $gitd = shell_exec("(cat ./temp.diff | ./diff2html.sh)");
         } catch (Exception $e) {
             $gitd = "*No diff possible at this position.*";// . ": " . $e;
         }
