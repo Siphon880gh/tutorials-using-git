@@ -41,4 +41,6 @@ $output = str_replace("]]]]", "]</span>", $output);
 echo $output; */
 
 // https://github.com/kbjr/Git.php/blob/master/readme.md
+
+/* Now this is a tip of master */
 ?>
