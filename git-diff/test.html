@@ -1,0 +1,98 @@
+<html>
+<head>
+<title>Colorized Diff</title>
+</head>
+<style>
+.diffdiv  { border: solid 1px black;           }
+.comment  { color: gray;                       }
+.diff     { color: #8A2BE2;                    }
+.minus3   { color: blue;                       }
+.plus3    { color: maroon;                     }
+.at2      { color: lime;                       }
+.plus     { color: green; background: #E7E7E7; }
+.minus    { color: red;   background: #D7D7D7; }
+.only     { color: purple;                     }
+</style>
+<body>
+<pre>
+<span class="comment"></span><div class='diffdiv'>
+<span class="diff">diff --git a/get-note.php b/get-note.php</span>
+index 1752dcf..119d9c7 100644
+<span class="minus3">--- a/get-note.php</span>
+<span class="plus3">+++ b/get-note.php</span>
+<span class="at2">@@ -9,7 +9,11 @@ $repo = Git::open('./');</span>
+     if(!isset($_GET["hash"]))
+         echo json_encode(array("note"=&gt;"ERROR: This app is coded wrong. No hash number sent."));
+     else {
+<span class="minus">-        $note = $repo-&gt;run(sprintf("notes show %s", $_GET["hash"]));</span>
+<span class="plus">+        try {</span>
+<span class="plus">+            $note = $repo-&gt;run(sprintf("notes show %s", $_GET["hash"]));</span>
+<span class="plus">+        } catch (Exception $e) {</span>
+<span class="plus">+            $note = "*No notes*";// . ": " . $e;</span>
+<span class="plus">+        }</span>
+         echo json_encode(array("note"=&gt;$note));
+     }
+ ?&gt;
+\ No newline at end of file</div>
+<div class='diffdiv'>
+
+<span class="diff">diff --git a/index.php b/index.php</span>
+index 2638165..89e768a 100644
+<span class="minus3">--- a/index.php</span>
+<span class="plus3">+++ b/index.php</span>
+<span class="at2">@@ -12,7 +12,7 @@ $repo = Git::open('./');</span>
+ $output = $repo-&gt;run("log --graph --abbrev-commit --decorate --exclude=refs/notes/commits --format=format:'%d: %s %C(bold blue)[%H]%C(reset)%n   %C(white)%an%C(reset) %C(dim white) - %aD (%ar)' --all");
+ $lines = explode("\n", $output);
+ 
+<span class="minus">-echo "&lt;main&gt;&lt;pre&gt;"; // preserving tabs to HTML display</span>
+<span class="plus">+echo "&lt;main style='height:50vh;'&gt;&lt;pre&gt;"; // preserving tabs to HTML display</span>
+ for($i = 0; $i&lt;count($lines); $i++) {
+     $line = $lines[$i];
+     if($i%2===0) {
+<span class="at2">@@ -28,18 +28,10 @@ for($i = 0; $i&lt;count($lines); $i++) {</span>
+ }
+ echo "&lt;/pre&gt;&lt;/main&gt;"
+ 
+<span class="minus">-// Working on Notes</span>
+<span class="minus">-// https://git-scm.com/docs/git-notes</span>
+<span class="minus">-</span>
+<span class="minus">-// Another view:</span>
+<span class="minus">-// git show-branch</span>
+<span class="minus">- </span>
+<span class="minus">-</span>
+<span class="minus">-/* Now this is a tip of master */</span>
+ ?&gt;
+ 
+ &lt;aside id="selected"&gt;&lt;br&gt;&lt;/aside&gt;
+<span class="minus">-&lt;aside id="notes" style="border-top: 1px solid gray; padding-top: 15px;"&gt;&lt;/aside&gt;</span>
+<span class="plus">+&lt;aside id="notes" style="border-top: 1px solid gray; padding-top: 5px;"&gt;&lt;/aside&gt;</span>
+ 
+ &lt;script src="https://code.jquery.com/jquery-2.1.4.min.js"&gt;&lt;/script&gt;
+ &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.3.0/showdown.min.js"&gt;&lt;/script&gt;
+<span class="at2">@@ -74,7 +66,21 @@ $(function() {</span>
+         console.log(note);
+     }
+ 
+<span class="plus">+    // https://kbjr.github.io/Git.php/</span>
+<span class="plus">+</span>
+<span class="plus">+    // git does not allow git log graph combined with --reverse</span>
+<span class="plus">+    // https://github.com/jonas/tig/issues/127</span>
+<span class="plus">+    // work around is piping to tac which is not included in all environments so that's prohibitive</span>
+<span class="plus">+</span>
+<span class="plus">+</span>
+<span class="plus">+    // Working on Notes</span>
+<span class="plus">+    // https://git-scm.com/docs/git-notes</span>
+<span class="plus">+</span>
+<span class="plus">+    // Another view:</span>
+<span class="plus">+    // git show-branch</span>
+<span class="plus">+    </span>
+ 
+<span class="plus">+    /* Now this is a tip of master */</span>
+ });    
+ &lt;/script&gt;
+     
+\ No newline at end of file</div>
+
+</pre>
+</body>
+</html>
