@@ -21,6 +21,13 @@ $repo = Git::open('./');
 <script>
 window.holdingSecretKey = false;
 
+openAllFromBottom = function() {
+    $("a.hover-notes").each((i,el)=> {
+        const hash = $(el).data("hash");
+        window.open(`deps/get-diff.php?current_hash=${hash}`, "_blank");
+    });
+}
+
 // parse hash from line
 parseHash = function(firstLine) { 
     return firstLine.substring(
@@ -40,13 +47,10 @@ storeNoteByHash = function(hash, $commit) {
     });
 }
 
-
 // cast note to markdown
-castNoteToMD = function($commit) {
-    const note = typeof $commit.data("note")==="undefined"?"":$commit.data("note");
+castNoteToMD = function(note) {
     var converter = new showdown.Converter();
     converter.setOption("literalMidWordUnderscores", true);
-    $("body").html();
     if(note.length)
         $("#notes").html(converter.makeHtml(note));
     else
@@ -58,20 +62,21 @@ $(function() {
     //TODO: After rebasing or amending, the notes disappeared! How to preserve?
 
     // get notes for every commit and store locally
-    $(".hover-notes").each((i,el)=> {
+    $("a.hover-notes").each((i,el)=> {
         const hash = parseHash($(el).text());
+        $(el).data("hash", hash);
         storeNoteByHash(hash, $(el));
     });
 
     // mouse enter
-    $(".hover-notes").on("mouseenter", (e) => { 
+    $("a.hover-notes").on("mouseenter", (e) => { 
         $("#indicator-current-commit").text(e.target.innerText);
-        castNoteToMD($(e.target))
+        castNoteToMD($(e.target).data("note"))
     });
 
 
     // click to see git diff (hold shift for alternate view)
-    $(".hover-notes").on("click", (e) => { 
+    $("a.hover-notes").on("click", (e) => { 
         $("#indicator-current-commit").text(e.target.innerText);
         const hash = parseHash(e.target.innerText);
         if(window.holdingSecretKey)
@@ -129,7 +134,7 @@ a:hover {
 <main style='height:50vh; overflow-y: scroll;'>
 <h2>Tutorials Using Git Branches and Commits</h2>
 1. Here's a tree of all the major steps for the app/boilerplate/bundler/etc.<br>
-2. Start from the bottom of the tree and click the topic. Each topic is cumulative and dependent on the previous topic.<br>
+2. Start from the bottom of the tree and click the topic. Each topic is cumulative and dependent on the previous topic. <a href="#" onclick="openAllFromBottom();">Open all from bottom.</a><br>
 3. You'll see what new codes there are from the previous step. Try to mimic these steps.<br>
 4. And move your mouse over the step to see the tutorial for that step. If it says there are No Notes, then the step is likely self explanatory and the author did not add any instructions.<br><br>
     <pre><!-- pre: to show tab characters --><?php
@@ -147,7 +152,7 @@ a:hover {
                     $line = str_replace(" : ", "", $line); // Remove : . Because %d or branch name only appears when branching, otherwise shows : instead of (branchName):
 
                 $pos = strpos($line, "*"); // ; sometimes the line starts with | *
-                $line = substr($line, 0, $pos) . "<a class='hover-notes' data-note=''>" . substr($line, $pos) . "</a><br>";
+                $line = substr($line, 0, $pos) . "<a class='hover-notes' data-hash='' data-note=''>" . substr($line, $pos) . "</a><br>";
                 echo $line;
             } else {
                 $isMatchAfterSymbol = preg_match('/[0-9A-Za-z]/', $line, $matches, PREG_OFFSET_CAPTURE);
