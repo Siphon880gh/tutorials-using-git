@@ -83,7 +83,13 @@ $(function() {
         const firstLine = e.target.innerText;
         const note = $(e.target).data("note");
         $("#indicator-current-commit").text(firstLine);
-        castNoteToMD(note)
+        castNoteToMD(note);
+    });
+    $(".branch-name").on("mouseenter", (e) => {
+        const $el = $(e.target),
+              $a = $el.parent("a");
+        debugger;
+        $a.trigger("mouseenter");
     });
 
     // click to see git diff (hold shift for alternate view)
@@ -242,7 +248,7 @@ function toggleBtn($el) {
                 if(strpos($line, " : ") === false) {
                     $beginBranchName = strpos($line, "(");
                     $endBranchName = strpos($line, ":")+1;
-                    $line = substr($line, 0, $beginBranchName) . "<span style='color:red;'>" . htmlentities(substr($line, $beginBranchName, $endBranchName-$beginBranchName)) . "</span>    " . htmlentities(substr($line, $endBranchName));
+                    $line = substr($line, 0, $beginBranchName) . htmlentities(substr($line, $beginBranchName, $endBranchName-$beginBranchName)) . htmlentities(substr($line, $endBranchName));
                 } else
                     $line = htmlentities(str_replace(" : ", "", $line)); // Remove : . Because %d or branch name only appears when branching, otherwise shows : instead of (branchName):
 
