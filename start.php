@@ -205,8 +205,14 @@ git fetch origin "refs/notes/*:refs/notes/*"
   fetch = +refs/notes/*:refs/notes/*
 </code></pre>
 
-      <p>
-        From: <a href="https://gist.github.com/topheman/ec8cde7c54e24a785e52" target="_blank">https://gist.github.com/topheman/ec8cde7c54e24a785e52</a>
+<p>You may want to create a ./.gitconfig file at the root to have the same configs in .git/config because git doesn't backup the .git folder<br><br>
+To apply the configuration of .gitconfig, each user needs to run:
+<code>git config --local include.path ../.gitconfig</code>
+</p>
+
+      <p><br/>
+        From: <br><a href="https://gist.github.com/topheman/ec8cde7c54e24a785e52" target="_blank">https://gist.github.com/topheman/ec8cde7c54e24a785e52</a><br/>
+        <a href="https://stackoverflow.com/questions/18329621/storing-git-config-as-part-of-the-repository" target="_blank">https://stackoverflow.com/questions/18329621/storing-git-config-as-part-of-the-repository</a>
       </p>
       </div>
       <div class="modal-footer">
