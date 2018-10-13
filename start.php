@@ -37,11 +37,12 @@ parseHash = function(firstLine) {
 }; 
 
 parseTitle = function(firstLine) {
-    return firstLine.substr(firstLine.indexOf("*")+1, firstLine.indexOf("[") - firstLine.indexOf("*")).trim();
+    const title = firstLine.substr(firstLine.indexOf("*")+1, firstLine.indexOf("[") - firstLine.indexOf("*")).trim();
+    return title;
 }
 
-// get note by hash
-storeNoteByHash = function(hash, $commit) {
+// store data-note
+storeDataNote = function(hash, $commit) {
     $.getJSON("deps/get-note.php", {hash: hash}, (objNote) => {
         if(objNote.note.length) {
             $commit.data("note", objNote.note);
@@ -55,7 +56,7 @@ storeNoteByHash = function(hash, $commit) {
 castNoteToMD = function(note) {
     var converter = new showdown.Converter();
     converter.setOption("literalMidWordUnderscores", true);
-    if(note.length)
+    if(typeof note!=="undefined" && note.length)
         $("#notes").html(converter.makeHtml(note));
     else
         $("#notes").html("<i>No notes</i>");
@@ -72,7 +73,7 @@ $(function() {
         const title = parseTitle(firstLine);
         $(el).data("hash", hash);
         $(el).data("title", title);
-        storeNoteByHash(hash, $(el));
+        storeDataNote(hash, $(el));
     });
 
     // mouse enter
@@ -149,6 +150,13 @@ a:hover {
     background-color: rgba(0,0,0,.5);
     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
+pre {
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
 </style>
 
 </head>
@@ -170,9 +178,9 @@ a:hover {
                 if(strpos($line, " : ") === false) {
                     $beginBranchName = strpos($line, "(");
                     $endBranchName = strpos($line, ":")+1;
-                    $line = substr($line, 0, $beginBranchName) . "<span style='color:red;'>" . substr($line, $beginBranchName, $endBranchName-$beginBranchName) . "</span>" . substr($line, $endBranchName);
+                    $line = substr($line, 0, $beginBranchName) . "<span style='color:red;'>" . htmlentities(substr($line, $beginBranchName, $endBranchName-$beginBranchName)) . "</span>    " . htmlentities(substr($line, $endBranchName));
                 } else
-                    $line = str_replace(" : ", "", $line); // Remove : . Because %d or branch name only appears when branching, otherwise shows : instead of (branchName):
+                    $line = htmlentities(str_replace(" : ", "", $line)); // Remove : . Because %d or branch name only appears when branching, otherwise shows : instead of (branchName):
 
                 $pos = strpos($line, "*"); // ; sometimes the line starts with | *
                 $line = substr($line, 0, $pos) . "<a class='hover-notes' data-hash='' data-title='' data-note=''>" . substr($line, $pos) . "</a><br>";
