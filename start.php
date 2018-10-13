@@ -24,9 +24,10 @@ $repo = Git::open('./');
 window.holdingSecretKey = false;
 
 openAllFromBottom = function() {
-    $("a.hover-notes").each((i,el)=> {
+    $("a.hover-notes").toArray().reverse().splice(1).forEach(function(el) { 
+        const $el = $(el);
         const hash = $(el).data("hash");
-        window.open(`deps/get-diff.php?current_hash=${hash}`, "_blank");
+        window.open(`deps/get-diff.php?current_hash=${hash}&title=${title}`, "_blank");
     });
 }
 
