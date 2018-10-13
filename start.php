@@ -205,8 +205,14 @@ git fetch origin "refs/notes/*:refs/notes/*"
   fetch = +refs/notes/*:refs/notes/*
 </code></pre>
 
-      <p>
-        From: <a href="https://gist.github.com/topheman/ec8cde7c54e24a785e52" target="_blank">https://gist.github.com/topheman/ec8cde7c54e24a785e52</a>
+<p>You may want to create a ./.gitconfig file at the root to have the same configs in .git/config because git doesn't backup the .git folder<br><br>
+To apply the configuration of .gitconfig, each user needs to run:
+<code>git config --local include.path ../.gitconfig</code>
+</p>
+
+      <p><br/>
+        From: <br><a href="https://gist.github.com/topheman/ec8cde7c54e24a785e52" target="_blank">https://gist.github.com/topheman/ec8cde7c54e24a785e52</a><br/>
+        <a href="https://stackoverflow.com/questions/18329621/storing-git-config-as-part-of-the-repository" target="_blank">https://stackoverflow.com/questions/18329621/storing-git-config-as-part-of-the-repository</a>
       </p>
       </div>
       <div class="modal-footer">
@@ -233,9 +239,11 @@ function toggleBtn($el) {
 </script>
 <span class="fa fa-toggle-on" onclick="toggleBtn($(this))" style="cursor:pointer;"></span>
 <div id="js-instructions">
-1. The idea is a new plateform for creating programming tutorial by taking advantage of git diff to see code changes from step to step and git notes that explain the steps. Git notes is versatile because you can enter multiple lines of explanations and push them to the github repos (<a href="#" data-toggle="modal" data-target="#pushing-fetching-notes">though by default, they are not pushed</a>).<br>
-2. The steps or commits start from the bottom. You see notes by hovering the mouse over. You see the code changes of the previous commit and current commit by clicking the commit. <a href="#" onclick="openAllFromBottom();">Open all from bottom.</a><br>
-3. By placing start.php and /deps into a repository, you can see the git commits step by step.
+1. The idea is a new platform for creating programming tutorials by taking advantage of git diff to see code changes from step to step and git notes that explain the steps. This tool will let you see git diff and notes in one place. Git notes is versatile because you can enter multiple lines of explanations and push them to the github repos (<a href="#" data-toggle="modal" data-target="#pushing-fetching-notes">though by default, pushing does not include notes</a>). Your git notes can have markdown and this page will effortlessly format the various headings, lists, emphasis, etc.<br>
+2. The commits that are actually steps of the code changes start from the bottom. You see notes by hovering the mouse over. You see the code changes of the previous commit and current commit by clicking the commit. <a href="#" onclick="openAllFromBottom();">Open all from bottom.</a><br>
+2b. Hold shift while clicking a commit for the alternate git diff view that's side by side (draw back is there's no word wrapping. Maybe in a future version this would be the newer git diff with word wrapping).<br>
+3. How to port to other git repos: Download their repo. Then place start.php and /deps there. Run start.php on a server and you will see the git commits step by step.
+
 </div>
 <p/>
     <pre><!-- pre: to show tab characters --><?php
