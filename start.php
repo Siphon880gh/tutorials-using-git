@@ -170,7 +170,7 @@ pre {
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">Pushing and Fetching Git Notes</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="position:absolute; top:5px; right:5px;">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -212,9 +212,25 @@ pre {
 
 <main style='height:50vh; overflow-y: scroll;'>
 <h2>Tutorials Using Git Branches and Commits</h2>
+<script>
+function toggleBtn($el) {
+    if($el.hasClass('fa-toggle-on')) { 
+        $el.removeClass('fa-toggle-on');
+        $el.addClass('fa-toggle-off');
+        $("#js-instructions").hide();
+    } else {
+        $el.removeClass('fa-toggle-off');
+        $el.addClass('fa-toggle-on');
+        $("#js-instructions").show();
+    }
+} // toggleBtn
+</script>
+<span class="fa fa-toggle-on" onclick="toggleBtn($(this))" style="cursor:pointer;"></span>
+<div id="js-instructions">
 1. The idea is a new plateform for creating programming tutorial by taking advantage of git diff to see code changes from step to step and git notes that explain the steps. Git notes is versatile because you can enter multiple lines of explanations and push them to the github repos (<a href="#" data-toggle="modal" data-target="#pushing-fetching-notes">though by default, they are not pushed</a>).<br>
 2. The steps or commits start from the bottom. You see notes by hovering the mouse over. You see the code changes of the previous commit and current commit by clicking the commit. <a href="#" onclick="openAllFromBottom();">Open all from bottom.</a><br>
 3. By placing start.php and /deps into a repository, you can see the git commits step by step.
+</div>
 <p/>
     <pre><!-- pre: to show tab characters --><?php
         $output = $repo->run("log --graph --abbrev-commit --decorate --exclude=refs/notes/commits --format=format:'%d: %s %C(bold blue)[%H]%C(reset)%n   %C(white)%an%C(reset) %C(dim white) - %aD (%ar)' --all");
