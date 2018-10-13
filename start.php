@@ -16,6 +16,8 @@ $repo = Git::open('./');
 <title>Tutorials Using Git Branches and Commits</title>
 
 <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <script>
@@ -162,12 +164,58 @@ pre {
 </head>
 <body>
 
+<!-- Modal -->
+<div class="modal fade" id="pushing-fetching-notes" tabindex="-1" role="dialog" aria-labelledby="pushing-fetching-notes-label" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Pushing and Fetching Git Notes</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <h5>Push</h5>
+        <p>Like tags, notes aren't pushed by default.</p>
+        <pre><code>git push origin refs/notes/commits
+        git push origin "refs/notes/*"
+        </code></pre>
+        <h5>Fetch</h5>
+        <p>Notes aren't fetched by default.</p>
+        <pre><code>git fetch origin refs/notes/commits:refs/notes/commits
+        git fetch origin "refs/notes/*:refs/notes/*"
+        </code></pre>
+        <p>To fetch notes by default : <code>vi .git/config</code></p>
+        <pre><code>#edit this part
+
+[remote "origin"]
+  fetch = +refs/heads/*:refs/remotes/origin/*
+
+#to become
+
+[remote "origin"]
+  fetch = +refs/heads/*:refs/remotes/origin/*
+  fetch = +refs/notes/*:refs/notes/*
+</code></pre>
+
+      <p>
+        From: <a href="https://gist.github.com/topheman/ec8cde7c54e24a785e52" target="_blank">https://gist.github.com/topheman/ec8cde7c54e24a785e52</a>
+      </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <main style='height:50vh; overflow-y: scroll;'>
 <h2>Tutorials Using Git Branches and Commits</h2>
-1. Here's a tree of all the major steps for the app/boilerplate/bundler/etc.<br>
-2. Start from the bottom of the tree and click the topic. Each topic is cumulative and dependent on the previous topic. <a href="#" onclick="openAllFromBottom();">Open all from bottom.</a><br>
-3. You'll see what new codes there are from the previous step. Try to mimic these steps.<br>
-4. And move your mouse over the step to see the tutorial for that step. If it says there are No Notes, then the step is likely self explanatory and the author did not add any instructions.<br><br>
+1. The idea is a new plateform for creating programming tutorial by taking advantage of git diff to see code changes from step to step and git notes that explain the steps. Git notes is versatile because you can enter multiple lines of explanations and push them to the github repos (<a href="#" data-toggle="modal" data-target="#pushing-fetching-notes">though by default, they are not pushed</a>).<br>
+2. The steps or commits start from the bottom. You see notes by hovering the mouse over. You see the code changes of the previous commit and current commit by clicking the commit. <a href="#" onclick="openAllFromBottom();">Open all from bottom.</a><br>
+3. By placing start.php and /deps into a repository, you can see the git commits step by step.
+<p/>
     <pre><!-- pre: to show tab characters --><?php
         $output = $repo->run("log --graph --abbrev-commit --decorate --exclude=refs/notes/commits --format=format:'%d: %s %C(bold blue)[%H]%C(reset)%n   %C(white)%an%C(reset) %C(dim white) - %aD (%ar)' --all");
         $lines = explode("\n", $output);
