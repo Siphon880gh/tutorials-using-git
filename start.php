@@ -185,12 +185,12 @@ pre {
         <h5>Push</h5>
         <p>Like tags, notes aren't pushed by default.</p>
         <pre><code>git push origin refs/notes/commits
-        git push origin "refs/notes/*"
+git push origin "refs/notes/*"
         </code></pre>
         <h5>Fetch</h5>
         <p>Notes aren't fetched by default.</p>
         <pre><code>git fetch origin refs/notes/commits:refs/notes/commits
-        git fetch origin "refs/notes/*:refs/notes/*"
+git fetch origin "refs/notes/*:refs/notes/*"
         </code></pre>
         <p>To fetch notes by default : <code>vi .git/config</code></p>
         <pre><code>#edit this part
