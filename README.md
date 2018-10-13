@@ -30,23 +30,14 @@ Authoring
 
 Installation
 ---
-- Make sure you have shell access. MAMP is a good tool. Without shell access, this version of git diff won't work (the future git diff web version that you can preview by clicking a commit while holding Shift would not have this limitation).
-- Copy these files into the folder that's a repository. If it is not yet a repository, make sure to `git init`. Copy all folders and files except .git.
-- Just run start.php in a server, and you're all good to go. 
-    - It will show the tree of the repository. If you run this and you haven't setup a git repos, you'll see this error:  
-`Fatal error: Uncaught Exception: "/Users/..." is not a git repository`
-    - If you haven't commited anything, there'll be no tree when you run start.php, of course.
+- Copy start.php and /deps to the repos of interest.
+- Run start.php on a server:
+    - It will show the tree of repository commits.
+    - If you haven't commited anything, there'll be a blank tree.
 
-Easy instructions for the learner
+Usage
 --
-- Here's a tree of all the major steps for the app/boilerplate/bundler/etc.
-- Start from the bottom of the tree and click the topic. Each topic is cumulative and dependent on the previous topic.
-- You'll see what new codes there are from the previous step. Try to mimic these steps.
-- And move your mouse over the step to see the tutorial for that step. If it says there are No Notes, then the step is likely self explanatory and the author did not add any instructions.
-
-
-Advanced instructions for the learner
----
-- Move mouse over the commits for any notes that were added with `git notes edit`, ideally where the author write parts of the tutorial in Markdown format.
-- Click a commit for a git diff with the commit more upstream, showing what and where the changes of the code are and ideally that the tutorial is explaining at that commit of the tree.
-- Hold shift while clicking a commit for the alternate git diff view that's side by side (draw back is there's no word wrapping. Maybe in a future version this would be the newer git diff with word wrapping).
+1. The idea is a new platform for creating programming tutorials by taking advantage of git diff to see code changes from step to step and git notes that explain those steps. This tool will let you see git diff and notes in one place. Git notes is versatile because you can enter multiple lines of explanations and push them to the github repos (though by default, pushing does not include notes). Your git notes can have markdown and this page will effortlessly format the various headings, lists, emphasis, etc.
+2. The commits that are actually steps of the code changes start from the bottom. You see notes by hovering the mouse over. You see the code changes of the previous commit and current commit by clicking the commit. Open all from bottom.  
+2b. Hold shift while clicking a commit for the alternate git diff view that's side by side (draw back is there's no word wrapping. Maybe in a future version this would be the newer git diff with word wrapping).
+3. How to port to other git repos: Download their repo. Then place start.php and /deps there. Run start.php on a server and you will see the git commits step by step.
