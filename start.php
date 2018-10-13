@@ -112,6 +112,15 @@ $(function() {
 .hover-notes {
     cursor: pointer;
 }
+a {
+    color: blue;
+}
+a:active {
+    color: red;
+}
+a:hover {
+    color: red;
+}
 </style>
 
 </head>
@@ -138,7 +147,7 @@ $(function() {
                     $line = str_replace(" : ", "", $line); // Remove : . Because %d or branch name only appears when branching, otherwise shows : instead of (branchName):
 
                 $pos = strpos($line, "*"); // ; sometimes the line starts with | *
-                $line = substr($line, 0, $pos) . "<span class='hover-notes' style='color:blue;' data-note=''>" . substr($line, $pos) . "</span><br>";
+                $line = substr($line, 0, $pos) . "<a class='hover-notes' data-note=''>" . substr($line, $pos) . "</a><br>";
                 echo $line;
             } else {
                 $isMatchAfterSymbol = preg_match('/[0-9A-Za-z]/', $line, $matches, PREG_OFFSET_CAPTURE);
