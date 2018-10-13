@@ -18,13 +18,15 @@ Authoring
 ---
 - Tutorials or explanations are added through `git notes`.
 - Be careful about rebasing (even as simple as rewording) or amending commits because that'd change the hash number. Then the notes will no longer be associated with that commit or any commits downstream. I suggest once you are sure the commits are final, then you start adding notes to the appropriate commits. This means you are adding notes to past commits.
-- You can add notes to past commits with:  
-`git notes add 0ea7d1e05a8629ae72a98955423f5094561d59ac -m "hi"
+- You can add notes to past commits with either:  
+`git notes edit 0ea7d1e05a8629ae72a98955423f5094561d59ac`  
+`git notes add 0ea7d1e05a8629ae72a98955423f5094561d59ac -m "hi"`
 `
 - You can add notes to the current commit with either:  
-`git notes edit` or  
+`git notes edit`  
 `git notes add -m "hi"`
--Notes can be in Markdown. The start.php will show the formatting, making your tutorial intuitive.
+- Notes can be in Markdown. The start.php would format Markdown text.
+- Using `edit` lets you add notes using a text editor so it's easier to enter lines of notes.
 
 Installation
 ---
