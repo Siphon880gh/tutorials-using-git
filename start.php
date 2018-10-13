@@ -36,6 +36,10 @@ parseHash = function(firstLine) {
             );
 }; 
 
+parseTitle = function(firstLine) {
+    return firstLine.substr(firstLine.indexOf("*")+1, firstLine.indexOf("[") - firstLine.indexOf("*")).trim();
+}
+
 // get note by hash
 storeNoteByHash = function(hash, $commit) {
     $.getJSON("deps/get-note.php", {hash: hash}, (objNote) => {
@@ -63,26 +67,33 @@ $(function() {
 
     // get notes for every commit and store locally
     $("a.hover-notes").each((i,el)=> {
-        const hash = parseHash($(el).text());
+        const firstLine = $(el).text();
+        const hash = parseHash(firstLine);
+        const title = parseTitle(firstLine);
         $(el).data("hash", hash);
+        $(el).data("title", title);
         storeNoteByHash(hash, $(el));
     });
 
     // mouse enter
     $("a.hover-notes").on("mouseenter", (e) => { 
-        $("#indicator-current-commit").text(e.target.innerText);
-        castNoteToMD($(e.target).data("note"))
+        const firstLine = e.target.innerText;
+        const note = $(e.target).data("note");
+        $("#indicator-current-commit").text(firstLine);
+        castNoteToMD(note)
     });
-
 
     // click to see git diff (hold shift for alternate view)
     $("a.hover-notes").on("click", (e) => { 
-        $("#indicator-current-commit").text(e.target.innerText);
-        const hash = parseHash(e.target.innerText);
+        const firstLine = e.target.innerText;
+        const $el = $(e.target);
+        $("#indicator-current-commit").text(firstLine);
+        const hash = $el.data("hash");
+        const title = $el.data("title");
         if(window.holdingSecretKey)
-            window.open(`deps/alt-git-diff/get-diff.php?current_hash=${hash}`, "_blank");
+            window.open(`deps/alt-git-diff/get-diff.php?current_hash=${hash}&title=${title}`, "_blank");
         else
-            window.open(`deps/get-diff.php?current_hash=${hash}`, "_blank");
+            window.open(`deps/get-diff.php?current_hash=${hash}&title=${title}`, "_blank");
     });
 
     // https://kbjr.github.io/Git.php/
@@ -164,7 +175,7 @@ a:hover {
                     $line = str_replace(" : ", "", $line); // Remove : . Because %d or branch name only appears when branching, otherwise shows : instead of (branchName):
 
                 $pos = strpos($line, "*"); // ; sometimes the line starts with | *
-                $line = substr($line, 0, $pos) . "<a class='hover-notes' data-hash='' data-note=''>" . substr($line, $pos) . "</a><br>";
+                $line = substr($line, 0, $pos) . "<a class='hover-notes' data-hash='' data-title='' data-note=''>" . substr($line, $pos) . "</a><br>";
                 echo $line;
             } else {
                 $isMatchAfterSymbol = preg_match('/[0-9A-Za-z]/', $line, $matches, PREG_OFFSET_CAPTURE);

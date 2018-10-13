@@ -3,6 +3,11 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once("git-php/Git.php");
 $repo = Git::open('../');
+
+if(isset($_GET["title"]))
+    echo sprintf("<title>%s</title>", $_GET["title"]);
+else
+    echo "<title>Commit</title>";
 ?>
 
 <?php
