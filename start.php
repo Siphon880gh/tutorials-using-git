@@ -248,12 +248,14 @@ function toggleBtn($el) {
 </div>
 <p/>
     <pre><!-- pre: to show tab characters --><?php
-        $output = $repo->run("log --graph --abbrev-commit --decorate --exclude=refs/notes/commits --format=format:'%d: %s %C(bold blue)[%H]%C(reset)%n   %C(white)%an%C(reset) %C(dim white) - %aD (%ar)' --all");
+        $output = $repo->run("log --graph --abbrev-commit --decorate --exclude=refs/notes/commits --format=format:'**[**%d: %s %C(bold blue)[%H]%C(reset)**]**%n   %C(white)%an%C(reset) %C(dim white) - %aD (%ar) --all'");
         $lines = explode("\n", $output);
 
         for($i = 0; $i<count($lines); $i++) {
             $line = $lines[$i];
-            if($i%2===0) {
+            if(strpos($line, "**[**")!==false) {
+                $line = str_replace("**[**", "", $line);
+                $line = str_replace("**]**", "", $line);
                 if(strpos($line, " : ") === false) {
                     $beginBranchName = strpos($line, "(");
                     $endBranchName = strpos($line, ":")+1;
@@ -262,7 +264,7 @@ function toggleBtn($el) {
                     $line = htmlentities(str_replace(" : ", "", $line)); // Remove : . Because %d or branch name only appears when branching, otherwise shows : instead of (branchName):
 
                 $pos = strpos($line, "*"); // ; sometimes the line starts with | *
-                $line = substr($line, 0, $pos) . "<a class='hover-notes' data-hash='' data-title='' data-note=''>" . substr($line, $pos) . "</a><br>";
+                $line = substr($line, 0, $pos) . "<a class='hover-notes' data-hash='' data-title='' data-note=''>* " . substr($line, $pos+1) . "</a><br>";
                 echo $line;
             } else {
                 $isMatchAfterSymbol = preg_match('/[0-9A-Za-z]/', $line, $matches, PREG_OFFSET_CAPTURE);
