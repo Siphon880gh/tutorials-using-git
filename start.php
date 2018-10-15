@@ -21,7 +21,19 @@ $repo = Git::open('./');
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
 <script>
-window.holdingSecretKey = false;
+window.holdingShiftKey = false;
+
+function toggleBtn($el) {
+    if($el.hasClass('fa-toggle-on')) { 
+        $el.removeClass('fa-toggle-on');
+        $el.addClass('fa-toggle-off');
+        $("#js-instructions").hide();
+    } else {
+        $el.removeClass('fa-toggle-off');
+        $el.addClass('fa-toggle-on');
+        $("#js-instructions").show();
+    }
+} // toggleBtn
 
 openAllFromBottom = function() {
     $("a.hover-notes").toArray().reverse().splice(1).forEach(function(el) { 
@@ -67,8 +79,6 @@ castNoteToMD = function(note) {
 
 $(function() {
 
-    //TODO: After rebasing or amending, the notes disappeared! How to preserve?
-
     // get notes for every commit and store locally
     $("a.hover-notes").each((i,el)=> {
         const firstLine = $(el).text();
@@ -100,41 +110,44 @@ $(function() {
         $("#indicator-current-commit").text(firstLine);
         const hash = $el.data("hash");
         const title = $el.data("title");
-        if(window.holdingSecretKey)
+        if(window.holdingShiftKey)
             window.open(`deps/alt-git-diff/get-diff.php?current_hash=${hash}&title=${title}`, "_blank");
         else
             window.open(`deps/get-diff.php?current_hash=${hash}&title=${title}`, "_blank");
     });
 
-    // https://kbjr.github.io/Git.php/
-
-    // git does not allow git log graph combined with --reverse
-    // https://github.com/jonas/tig/issues/127
-    // work around is piping to tac which is not included in all environments so that's prohibitive
-
-
-    // Working on Notes
-    // https://git-scm.com/docs/git-notes
-
-    // Another view:
-    // git show-branch
-
-
-    /* Now this is a tip of master */
-
     $("body").on("keydown", function(e) {
         if(e.shiftKey)
-            window.holdingSecretKey = true;
+            window.holdingShiftKey = true;
     });
     $("body").on("keyup", function(e) {
         if(e.shiftKey)
-            window.holdingSecretKey = false;
+            window.holdingShiftKey = false;
     });
 });    
-
 </script>
 
 <style>
+body {
+    margin: 0 5px 0 5px;
+}
+#container-info {
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    /* border-width: 1px 0 0 1px;
+    border-style: solid;
+    border-color: rgba(125,125,125,0.7); */
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 30px 0 10px rgba(0,0,0,.1);
+    height: 100%;
+    overflow: 'hidden';
+    transition: max-height 4s linear;
+}
+#notes, main {
+    overflow-y: scroll;
+}
 .hover-notes {
     cursor: pointer;
 }
@@ -147,9 +160,6 @@ a:active {
 a:hover {
     color: red;
 }
-#notes, main {
-    overflow-y: scroll;
-}
 ::-webkit-scrollbar {
     -webkit-appearance: none;
     width: 7px;
@@ -159,6 +169,7 @@ a:hover {
     background-color: rgba(0,0,0,.5);
     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
+/* Word-wrapping in pre */
 pre {
     white-space: pre-wrap;       /* Since CSS 2.1 */
     white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
@@ -170,6 +181,58 @@ pre {
 
 </head>
 <body>
+
+<main style='height:50vh; overflow-y: scroll;'>
+<h2>Tutorials Using Git Branches and Commits</h2>
+
+    <div id="container-instructions">
+        <label for="js-instructions-btn">Instructions:</label>&nbsp;<span id="js-instructions-btn" class="fa fa-toggle-off" onclick="toggleBtn($(this))" style="cursor:pointer;"></span>
+        <div id="js-instructions" style="display:none;">
+        <ol>
+            <li><i>What is:</i> This is a walkthrough tutorial generator and reader for git repos by leveraging the power of git diff and git notes. You can get your team up to speed or personally review how to setup different boilerplates (like webpack). This tool show a list of branches and commits in order of creation from the <a href="#" onclick="$('main').animate({scrollTop: $('main')[0].scrollHeight},'medium');">bottom</a>. You may add notes to particular commits with the command git note. Those notes can have multiple lines and Markdown styles so that the walkthroughs look like formatted documents.</li>
+            <li><i>About git notes:</i> Git does not by default fetch and push notes. Here's to do it manually or to setup defaults: <a href="#" data-toggle="modal" data-target="#pushing-fetching-notes">Pushing and Fetching Git Notes</a>.</li>
+            <li><i>How to install:</i> Place start.php and /deps in any git repos. Run start.php on a PHP server.</li>
+            <li><i>How to use:</i> Commits with the note icon <i class="fa fa-file-text-o"></i> have notes you can view by hovering the mouse cursor over. Click commits in sequential order to step through the code changes and view any notes. Hold shift while clicking a commit to view the alternate git diff that is side by side. <a href="#" onclick="openAllFromBottom();">Open all commit git diffs.</a><br></li>
+            <li><i>Suggested use of branches:</i> You can use branches to show how the code could change at different points, for example, with different setups of webpack.</li>
+        </ol>
+    </div>
+    <div id="container-commits">
+        <pre><!-- pre: to show tab characters --><?php
+            $output = $repo->run("log --graph --abbrev-commit --decorate --exclude=refs/notes/commits --format=format:'**[**%d: %s %C(bold blue)[%H]%C(reset)**]**%n   %C(white)%an%C(reset) %C(dim white) - %aD (%ar) --all'");
+            $lines = explode("\n", $output);
+
+            for($i = 0; $i<count($lines); $i++) {
+                $line = $lines[$i];
+                if(strpos($line, "**[**")!==false) {
+                    $line = str_replace("**[**", "", $line);
+                    $line = str_replace("**]**", "", $line);
+                    if(strpos($line, " : ") === false) {
+                        $beginBranchName = strpos($line, "(");
+                        $endBranchName = strpos($line, ":")+1;
+                        $line = substr($line, 0, $beginBranchName) . htmlentities(substr($line, $beginBranchName, $endBranchName-$beginBranchName)) . htmlentities(substr($line, $endBranchName));
+                    } else
+                        $line = htmlentities(str_replace(" : ", "", $line)); // Remove : . Because %d or branch name only appears when branching, otherwise shows : instead of (branchName):
+
+                    $pos = strpos($line, "*"); // ; sometimes the line starts with | *
+                    $line = substr($line, 0, $pos) . "<a class='hover-notes' data-hash='' data-title='' data-note=''>* " . substr($line, $pos+1) . "</a><br>";
+                    echo $line;
+                } else {
+                    $isMatchAfterSymbol = preg_match('/[0-9A-Za-z]/', $line, $matches, PREG_OFFSET_CAPTURE);
+                    $strPos = $isMatchAfterSymbol ? $matches[0][1]:-1;
+                    if($strPos!==-1) {
+                        echo sprintf("%s<span style='color:lightgray;'>%s</span><br><br>", substr($line, 0, $strPos-1), substr($line, $strPos));
+                    }
+                }
+            }
+            ?>
+        </pre>
+    </div>
+</main>
+
+<aside id="container-info">
+    <div id="indicator-current-commit" style="margin-top: 1rem;"><br></div>
+    <div id="notes" style="border-top: 1px solid gray; padding-top: 5px;"></div>
+</aside>
 
 <!-- Modal -->
 <div class="modal fade" id="pushing-fetching-notes" tabindex="-1" role="dialog" aria-labelledby="pushing-fetching-notes-label" aria-hidden="true">
@@ -206,80 +269,36 @@ git fetch origin "refs/notes/*:refs/notes/*"
   fetch = +refs/notes/*:refs/notes/*
 </code></pre>
 
+
+<h5>Portable git config</h5>
+
 <p>You may want to create a ./.gitconfig file at the root to have the same configs in .git/config because git doesn't backup the .git folder<br><br>
 To apply the configuration of .gitconfig, each user needs to run:
 <code>git config --local include.path ../.gitconfig</code>
 </p>
 
-      <p><br/>
-        From: <br><a href="https://gist.github.com/topheman/ec8cde7c54e24a785e52" target="_blank">https://gist.github.com/topheman/ec8cde7c54e24a785e52</a><br/>
-        <a href="https://stackoverflow.com/questions/18329621/storing-git-config-as-part-of-the-repository" target="_blank">https://stackoverflow.com/questions/18329621/storing-git-config-as-part-of-the-repository</a>
-      </p>
-      </div>
+
+<h5>Lost Notes</h5>
+<p>Renaming or rebasing commits will change the commit's ID. It also changes the ID's of downstream commits. This will cause the note to be lost. You'll want to revisit the dangling commits:<p></p>
+<ol>
+    <li><code class="inline">git fsck --lost-found</code></li>
+    <li><code class="inline">git notes show COMMIT_ID</code></li>
+    <li>Once you find the right notes, copy and paste it over.</li>
+</ol>
+</p>
+
+<p style="font-size:.7em;"><br/>
+From: <br><a href="https://gist.github.com/topheman/ec8cde7c54e24a785e52" target="_blank">https://gist.github.com/topheman/ec8cde7c54e24a785e52</a><br/>
+<a href="https://stackoverflow.com/questions/18329621/storing-git-config-as-part-of-the-repository" target="_blank">https://stackoverflow.com/questions/18329621/storing-git-config-as-part-of-the-repository</a>
+</p>
+</div>
+      
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
-</div>
-
-<main style='height:50vh; overflow-y: scroll;'>
-<h2>Tutorials Using Git Branches and Commits</h2>
-<script>
-function toggleBtn($el) {
-    if($el.hasClass('fa-toggle-on')) { 
-        $el.removeClass('fa-toggle-on');
-        $el.addClass('fa-toggle-off');
-        $("#js-instructions").hide();
-    } else {
-        $el.removeClass('fa-toggle-off');
-        $el.addClass('fa-toggle-on');
-        $("#js-instructions").show();
-    }
-} // toggleBtn
-</script>
-<span class="fa fa-toggle-on" onclick="toggleBtn($(this))" style="cursor:pointer;"></span>
-<div id="js-instructions">
-1. The idea is a new platform for creating programming tutorials by taking advantage of git diff to see code changes from step to step and git notes that explain the steps. This tool will let you see git diff and notes in one place. Git notes is versatile because you can enter multiple lines of explanations and push them to the github repos (<a href="#" data-toggle="modal" data-target="#pushing-fetching-notes">though by default, pushing does not include notes</a>). Your git notes can have markdown and this page will effortlessly format the various headings, lists, emphasis, etc.<br>
-2. The commits that are actually steps of the code changes start from the bottom. You see notes by hovering the mouse over. You see the code changes of the previous commit and current commit by clicking the commit. <a href="#" onclick="openAllFromBottom();">Open all from bottom.</a><br>
-2b. Hold shift while clicking a commit for the alternate git diff view that's side by side (draw back is there's no word wrapping. Maybe in a future version this would be the newer git diff with word wrapping).<br>
-3. How to port to other git repos: Download their repo. Then place start.php and /deps there. Run start.php on a server and you will see the git commits step by step.
-
-</div>
-<p/>
-    <pre><!-- pre: to show tab characters --><?php
-        $output = $repo->run("log --graph --abbrev-commit --decorate --exclude=refs/notes/commits --format=format:'**[**%d: %s %C(bold blue)[%H]%C(reset)**]**%n   %C(white)%an%C(reset) %C(dim white) - %aD (%ar) --all'");
-        $lines = explode("\n", $output);
-
-        for($i = 0; $i<count($lines); $i++) {
-            $line = $lines[$i];
-            if(strpos($line, "**[**")!==false) {
-                $line = str_replace("**[**", "", $line);
-                $line = str_replace("**]**", "", $line);
-                if(strpos($line, " : ") === false) {
-                    $beginBranchName = strpos($line, "(");
-                    $endBranchName = strpos($line, ":")+1;
-                    $line = substr($line, 0, $beginBranchName) . htmlentities(substr($line, $beginBranchName, $endBranchName-$beginBranchName)) . htmlentities(substr($line, $endBranchName));
-                } else
-                    $line = htmlentities(str_replace(" : ", "", $line)); // Remove : . Because %d or branch name only appears when branching, otherwise shows : instead of (branchName):
-
-                $pos = strpos($line, "*"); // ; sometimes the line starts with | *
-                $line = substr($line, 0, $pos) . "<a class='hover-notes' data-hash='' data-title='' data-note=''>* " . substr($line, $pos+1) . "</a><br>";
-                echo $line;
-            } else {
-                $isMatchAfterSymbol = preg_match('/[0-9A-Za-z]/', $line, $matches, PREG_OFFSET_CAPTURE);
-                $strPos = $isMatchAfterSymbol ? $matches[0][1]:-1;
-                if($strPos!==-1) {
-                    echo sprintf("%s<span style='color:lightgray;'>%s</span><br><br>", substr($line, 0, $strPos-1), substr($line, $strPos));
-                }
-            }
-        }
-        ?>
-    </pre>
-</main>
-
-<aside id="indicator-current-commit" style="margin-top: 1rem;"><br></aside>
-<aside id="notes" style="border-top: 1px solid gray; padding-top: 5px;"></aside>
+</div> <!-- Modal -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.3.0/showdown.min.js"></script>
 </body>

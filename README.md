@@ -1,52 +1,62 @@
 Tutorials Using Git Branches and Commits
 ===
-By Weng Fei Fung. There are many different frontends, bundlers, etc that you may need refreshers on and different websites and videos that teach too differently and some, teach ineffectively. We can take advantage of git to author uniform lessons that show code changes along the way of setting up webpack, react, etc, for example. This tool generates a clickable Tree of the branches and commits. 
+By Weng Fei Fung  
+*What is:* This is a walkthrough tutorial generator and reader for git repos by leveraging the power of git diff and git notes. You can get your team up to speed or personally review how to setup different boilerplates (like webpack). This tool show a list of branches and commits in order of creation from the bottom. You may add notes to particular commits with the command git note. Those notes can have multiple lines and Markdown styles so that the walkthroughs look like formatted documents.
 
-As the learner clicks through commits on the tree, they go through the steps of setting up an app and they see where and what the code changes are, because there will be a webpage showing the git diff between that commit they clicked and the earlier commit along the tree. 
+*About git notes:* Git does not by default fetch and push notes. Refer to section on Author for more information.
 
-As they hover their mouse over a commit, they see your tutorial for that step of the app (Markdown supported). So they not only see where the code changes are, but they're instructed on it. The learner sees a timeline of all code changes and an explanation why.
+*How to install:* Place start.php and /deps in any git repos. Run start.php on a PHP server.
 
-The tutorial can be multifaceted. The tree can contain branches. Say you want to deviate from the usual setup of webpack at some point, then the learner can see where they could and what other features become prohibitive once taking that route. You can combine multiple tutorials using branches.
+*How to use:* Commits with the note icon have notes you can view by hovering the mouse cursor over. Click commits in sequential order to step through the code changes and view any notes. Hold shift while clicking a commit to view the alternate git diff that is side by side.
 
-Restrictions
+*Suggested use of branches:* You can use branches to show how the code could change at different points, for example, with different setups of webpack.
+
+No Restrictions
 --
-- No restrictions on programming languages! You can even make snapshot tutorials of Android and iOS apps. Just make sure to add the appropriate patterns to .gitignore so your tutorial does not get bogged down.
-- Not only for beginners. You can make tutorials to refresh yourself on any tech that you use infrequently, so you don't have to start from scratch everytime.
+- No restrictions on programming languages! You can even make walkthrough tutorials of Android and iOS apps. Use .gitignore so your commit git diffs are not bogged down.
 
 
-Authoring
+Author
 ---
-- Tutorials or explanations are added through `git notes`.
-- Be careful about rebasing (even as simple as rewording) or amending commits because that'd change the hash number. Then the notes will no longer be associated with that commit or any commits downstream. I suggest once you are sure the commits are final, then you start adding notes to the appropriate commits. This means you are adding notes to past commits.
-- You can add notes to past commits with either:  
-`git notes edit 0ea7d1e05a8629ae72a98955423f5094561d59ac`  
-`git notes add 0ea7d1e05a8629ae72a98955423f5094561d59ac -m "hi"`
-`
-- You can add notes to the current commit with either:  
-`git notes edit`  
-`git notes add -m "hi"`
-- Notes can be in Markdown. The start.php would format Markdown text.
-- Using `edit` lets you add notes using a text editor so it's easier to enter lines of notes.
+- Git notes edit and add:
+    - Add notes to the current commit  (multilines vs single line, respectively):
+        - `git notes edit`  
+        - `git notes add -m "your_note_here"`
+    - Add notes to past commits: 
+        - `git notes edit COMMIT_ID`  
+        - `git notes add COMMIT_ID -m "your_note_here"`
 
-Installation
+- Online repos:
+    - Notes are not fetched or pushed by default.
+    - **Fetching**  
+        - To fetch by *default*:  
+            1. You can create a .gitconfig file with these settings to fetch notes by default:  
+                ```
+                [remote "origin"]  
+                url = your_git_reps_url  
+                fetch = +refs/heads/*:refs/remotes/origin/*  
+                fetch = +refs/notes/*:refs/notes/*  
+                ```
+            2. Then for every user, they need to run this command to apply .gitconfig:  
+                `git config --local include.path ../.gitconfig`
+        - To fetch *manually*:  
+            `git fetch origin refs/notes/commits:refs/notes/commits`  
+            `git fetch origin "refs/notes/*:refs/notes/*"`
+        - Make sure to fetch after cloning or pulling.
+    - **Pushing**
+        - You have to push manually:  
+            `git push origin refs/notes/commits`  
+            `git push origin "refs/notes/*"`
+
+- Markdown: You can add Markdown styles to have the tool show formatted documents.
+
+- Caveat: Renaming or rebasing commits will change the commit's ID. It also changes the ID's of downstream commits. This will cause the note to be lost. You'll want to revisit the dangling commits:
+    1. `git fsck --lost-found`
+    2. `git notes show COMMIT_ID`
+    3. Once you find the right notes, copy and paste it over.
+
+Learner
 ---
-- Make sure you have shell access. MAMP is a good tool. Without shell access, this version of git diff won't work (the future git diff web version that you can preview by clicking a commit while holding Shift would not have this limitation).
-- Copy these files into the folder that's a repository. If it is not yet a repository, make sure to `git init`. Copy all folders and files except .git.
-- Just run start.php in a server, and you're all good to go. 
-    - It will show the tree of the repository. If you run this and you haven't setup a git repos, you'll see this error:  
-`Fatal error: Uncaught Exception: "/Users/..." is not a git repository`
-    - If you haven't commited anything, there'll be no tree when you run start.php, of course.
-
-Easy instructions for the learner
---
-- Here's a tree of all the major steps for the app/boilerplate/bundler/etc.
-- Start from the bottom of the tree and click the topic. Each topic is cumulative and dependent on the previous topic.
-- You'll see what new codes there are from the previous step. Try to mimic these steps.
-- And move your mouse over the step to see the tutorial for that step. If it says there are No Notes, then the step is likely self explanatory and the author did not add any instructions.
-
-
-Advanced instructions for the learner
----
-- Move mouse over the commits for any notes that were added with `git notes edit`, ideally where the author write parts of the tutorial in Markdown format.
-- Click a commit for a git diff with the commit more upstream, showing what and where the changes of the code are and ideally that the tutorial is explaining at that commit of the tree.
-- Hold shift while clicking a commit for the alternate git diff view that's side by side (draw back is there's no word wrapping. Maybe in a future version this would be the newer git diff with word wrapping).
+- Simply drop start.php and /deps into the git repos. Then you can view all commits of that project in start.php.
+- Click a commit to view the code changes at that point. I recommend viewing from the first commits at the bottom of the list, then work your way up.
+- If you see a note icon, hover the mouse over. The author may have provided a formatted document explaining some code changes.
